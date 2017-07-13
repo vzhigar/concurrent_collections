@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="collections" default="run">
+    <property file="build.properties"/>
+
+    <path id="log4j">
+        <pathelement path="${lib.dir}/log4j-api-jar-2.7.jar"/>
+        <pathelement path="${lib.dir}/log4j-api-jar-2.7.jar"/>
+    </path>
+
+    <target name="build" depends="resolve">
+        <mkdir dir="${classes.dir}"/>
+        <javac classpathref="log4j" srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${classes.dir}"/>
+        <delete dir="${jar.dir}"/>
+        <delete dir="${lib.dir}"/>
+    </target>
+
+    <target name="run" depends="dist">
+        <java jar="${jar.dir}/dist.jar" fork="true"/>
+    </target>
+
+    <target name="dist" depends="build">
+        <mkdir dir="${jar.dir}"/>
+        <manifest file="./MANIFEST.MF">
+            <attribute name="Main-Class" value="by.training.Runner"/>
+        </manifest>
+        <jar basedir="${classes.dir}" destfile="${jar.dir}/dist.jar" manifest="./MANIFEST.MF"/>
+        <delete file="MANIFEST.MF"/>
+    </target>
+
+    <target name="resolve">
+        <mkdir dir="${lib.dir}"/>
+        <ivy:resolve/>
+        <ivy:retrieve pattern="${lib.dir}/[artifact]-[type]-[revision].[ext]"/>
+    </target>
+
+</project>
